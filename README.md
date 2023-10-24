@@ -10,7 +10,7 @@ and returns the word and number that the program used to create the password
 
 #The second file extracts the key from the .pkl file and uses to decryp the password but only when the user inserts the word and the number previously given by the first module 
 
-#### For major security insert ypu own words on the list in the generator #####
+#### For major security insert your own words on the list in the generator #####
 
 
 The main porpuse is to create random passwords that you can only access thru the program 
