@@ -19,7 +19,7 @@ def separar_palabras(nombre_heroe):
     return ' '.join(palabras)
 
 def generar_contraseña():
-    heroes = ['Superman', 'Batman', 'Spider Man', 'Flash', 'Green Arrow', 'Hulk', 'Hawkeye', 'Black Panther', 'Iron Man', 'Thor']
+    heroes = []
     heroe = random.choice(heroes).replace(" ", "")
     numero = random.randint(0, 99)
     caracteres = string.ascii_letters + string.digits + string.punctuation
