@@ -1,7 +1,7 @@
 import pickle
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-
+#extraemos los datos del archivo .plk previamente creado donde se almacenan las contraseñas y sus llaves
 def cargar_datos(heroe, numero):
     try:
         with open('KeyWords.pkl', 'rb') as archivo:
@@ -17,7 +17,7 @@ def cargar_datos(heroe, numero):
         print("No se encontraron datos válidos en el archivo 'KeyWords.pkl'.")
         print("Genera una contraseña primero.")
         return None
-
+#extraemos el key de cifrado
 def cargar_private_key():
     try:
         with open('private_key.pem', 'rb') as archivo:
@@ -27,7 +27,7 @@ def cargar_private_key():
     except FileNotFoundError:
         print("El archivo 'private_key.pem' no se encuentra. Por favor, asegúrate de haber generado una contraseña primero.")
         return None
-
+#desencripta la contraseña solicitada con su respectiva llave
 def desencriptar_contraseña(heroe, numero):
     cifrado = cargar_datos(heroe, numero)
     if cifrado is not None:
@@ -36,11 +36,11 @@ def desencriptar_contraseña(heroe, numero):
         contraseña = cipher.decrypt(cifrado['contraseña'])
         return contraseña.decode()
 
-# Luego, puedes solicitar el héroe y el número al usuario
+#Solicita que ingrese la palabra y numero utilizados para crear la contraseña que queremos desencriptar 
 heroe = input("Ingresa el héroe: ").replace(" ", "")
 numero = int(input("Ingresa el número: "))
 
-# Llamamos a la función desencriptar_contraseña
+# Modo de uso
 contraseña = desencriptar_contraseña(heroe, numero)
 if contraseña is not None:
     print(f"La contraseña generada es: {contraseña}")
