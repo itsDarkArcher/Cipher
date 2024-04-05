@@ -1,6 +1,6 @@
 # Cipher
-    #### Video Demo:  <https://youtu.be/LrJnulqus_M>
-    #### Description:
+#### Video Demo:  <https://youtu.be/LrJnulqus_M>
+
 
 ### Libraries Used:
 
