@@ -29,14 +29,14 @@ def main():
                 decrypt_password()
 
             elif option == "4":
-                print("\nThis was CS50.")
+                print("\nBye Bye.")
                 sys.exit()
 
             else:
                 print("\nInvalid option. Please select a valid option (1, 2, 3, 4).")
 
         except KeyboardInterrupt:
-            print("\nThis was CS50.")
+            print("\nBye Bye.")
             sys.exit()
         except Exception as e:
             print(f"\nError: {e}")
@@ -48,8 +48,7 @@ def generate_password():
     try:
         # Generate a random password
         characters = string.ascii_letters + string.digits
-        password_length = 18
-        password = ''.join(random.choice(characters) for _ in range(password_length))
+        password = ''.join(random.choice(characters) for _ in range(18))
 
         # Insert hyphens and periods randomly
         special_chars = '-.'
@@ -165,17 +164,18 @@ def encrypt_user_password():
     while True:
         try:
             password = input("Enter the password to encrypt: ")
-            if len(password) >= 12:
+            if check_password_strength(password):
                 hero, number, _, cipher = encrypt_password(password)
                 hero = ''.join(' ' + i if i.isupper() else i for i in hero).lstrip(' ')
                 print(f"A password was encrypted with the hero {hero} and the number {number}.")
                 break
             else:
-                print("The password must contain at least 12 characters")
+                print("The password must contain at least 12 characters, with at least 1 uppercase, 1 lowercase, a digit and a special character.")
         except Exception as e:
             print(f"\nError: {e}")
 
 def generate_encrypted_password():
+    
     """
     Generates and encrypts a random password.
     """
@@ -188,6 +188,26 @@ def generate_encrypted_password():
             break
         except Exception as e:
             print(f"\nError: {e}")
+
+def check_password_strength(password):
+    """
+    Checks the strength of a password.
+    Returns True if the password meets the criteria, False otherwise.
+    """
+    
+    # Check if the password meets the criteria
+    if len(password) < 12:
+        return False
+    if not any(char.isupper() for char in password):
+        return False
+    if not any(char.islower() for char in password):
+        return False
+    if not any(char.isdigit() for char in password):
+        return False
+    if not any(char in '-.' for char in password):
+        return False
+
+    return True
 
 if __name__ == "__main__":
     main()
