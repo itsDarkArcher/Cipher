@@ -5,4 +5,5 @@
 secure_passwords.db
 
 /back-end/
-
+/tests/test_project.py
+/backend_flask/__pycache__

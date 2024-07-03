@@ -1,5 +1,5 @@
-from crypto.PublicKey import RSA
-from crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
 import random
 import string
 import sqlite3
