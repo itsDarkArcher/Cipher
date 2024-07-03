@@ -1,7 +1,5 @@
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-import pickle
-import os
 import random
 import string
 import sqlite3
