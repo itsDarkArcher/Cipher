@@ -1,0 +1,12 @@
+# ignoring flow diagrams
+*.vsdx
+
+#ignoring the storage db 
+secure_passwords.db
+
+/Scripts/
+/Cipher/
+/.pytest_cache/
+/__pycache__/
+/.vscode/
+
