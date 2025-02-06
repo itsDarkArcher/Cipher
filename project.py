@@ -1,9 +1,8 @@
-import random
-import pickle
-import string
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-import os
+import random
+import string
+import sqlite3
 import sys
 
 # List of heroes for the password encryption
@@ -68,7 +67,7 @@ def encrypt_password(password):
     """
     try:
         # Select a random hero and number
-        hero = random.choice(heroes).replace(" ", "")
+        hero = random.choice(heroes)
         number = random.randint(0, 99)
 
         # Generate RSA key pair
@@ -77,31 +76,22 @@ def encrypt_password(password):
         # Encrypt the password
         encrypted_password = cipher.encrypt(password.encode())
 
-        # Store encrypted password and associated data
-        cipher_data = {
+        # Store encrypted password and the associated data in the db
+        conn = sqlite3.connect("secure_passwords.db")
+        cursor = conn.cursor()
+        cursor.execute('''
+        INSERT INTO passwords (hero, number, encrypted_password, private_key)
+        VALUES (?, ?, ?, ?)
+        ''', (hero, number, encrypted_password, key.export_key().decode("utf-8")))
+        conn.commit()
+        conn.close()
+        
+        return hero, number, password, {
             "hero": hero,
             "number": number,
             "password": encrypted_password,
             "private_key": key.export_key()
         }
-
-        # Check if the pickle file exists
-        if os.path.exists('Encrypt.pkl'):
-            # If the file exists, load the existing passwords
-            with open('Encrypt.pkl','rb') as f:
-                existing_passwords = pickle.load(f)
-        else:
-            # If the file doesn't exist, initialize an empty list
-            existing_passwords = []
-
-        # Append the new encrypted password to the list
-        existing_passwords.append(cipher_data)
-
-        # Save the updated list of encrypted passwords to the pickle file
-        with open('Encrypt.pkl', 'wb') as f:
-            pickle.dump(existing_passwords, f)
-
-        return hero, number, password, cipher_data
     except Exception as e:
         print(f"Error encrypting password: {e}. Please try again.")
 
@@ -111,7 +101,7 @@ def decrypt_password():
     """
     while True:
         try:
-            hero = input("Enter the hero: ").replace(" ", "")
+            hero = input("Enter the hero: ")
             number = int(input("Enter the number: "))
             cipher = load_data(hero, number)
             if cipher is not None:
@@ -125,26 +115,6 @@ def decrypt_password():
                 print("The specified hero and number were not found.")
         except Exception as e:
             print(f"\nError: {e}")
-
-def load_data(hero, number):
-    """
-    Loads data from the file and searches for matching hero and number.
-    """
-    try:
-        # Load data from file and search for matching hero and number
-        with open('Encrypt.pkl', 'rb') as file:
-            password = pickle.load(file)
-            for cipher_data in password:
-                if cipher_data['hero'] == hero and cipher_data['number'] == number:
-                    return cipher_data
-            return None
-    except FileNotFoundError:
-        print("The file 'Encrypt.pkl' is not found. Please make sure you have generated a password first.")
-        return None
-    except (KeyError):
-        print("No valid data found in the 'Encrypt.pkl' file.")
-        print("Generate a password first.")
-        return None
 
 def decrypt(cipher_data):
     """
@@ -163,10 +133,10 @@ def decrypt(cipher_data):
 def encrypt_user_password():
     while True:
         try:
+            setup_database()
             password = input("Enter the password to encrypt: ")
             if check_password_strength(password):
                 hero, number, _, cipher = encrypt_password(password)
-                hero = ''.join(' ' + i if i.isupper() else i for i in hero).lstrip(' ')
                 print(f"A password was encrypted with the hero {hero} and the number {number}.")
                 break
             else:
@@ -181,9 +151,9 @@ def generate_encrypted_password():
     """
     while True:
         try:
+            setup_database()
             password = generate_password()
             hero, number, _, cipher = encrypt_password(password)
-            hero = ''.join(' ' + i if i.isupper() else i for i in hero).lstrip(' ')
             print(f"The password {password} was generated and encrypted with the hero {hero} and number {number}.")
             break
         except Exception as e:
@@ -208,6 +178,48 @@ def check_password_strength(password):
         return False
 
     return True
+
+def load_data(hero, number):
+    """
+    Loads data from the database and searches for matching hero and number.
+    """
+    try:
+        # Load data from db and search for matching hero and number
+        conn = sqlite3.connect("secure_passwords.db")
+        cursor = conn.cursor()
+        cursor.execute('''
+        SELECT encrypted_password, private_key FROM passwords WHERE hero=? AND number=?
+        ''', (hero, number))
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            encrypted_password, private_key = row
+            return {
+                "hero": hero,
+                "number": number,
+                "password": encrypted_password,
+                "private_key": private_key
+            }
+        return None
+    except sqlite3.Error as e:
+        print(f"Error loading data: {e}. Please try again.")
+        return None
+    
+def setup_database():
+    conn = sqlite3.connect("secure_passwords.db")
+    cursor = conn.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS passwords (
+        id INTEGER PRIMARY KEY,
+        hero TEXT NOT NULL,
+        number INTEGER NOT NULL,
+        encrypted_password BLOB NOT NULL,
+        private_key TEXT NOT NULL
+    )
+    ''')
+    conn.commit()
+    conn.close()
 
 if __name__ == "__main__":
     main()
