@@ -37,11 +37,13 @@ def encrypt_password():
     Endpoint to encrypt given password
     """
     try:
+        setup_database() 
+        
         data = request.get_json()
         password = data['password']
         
         # Select random hero and number
-        hero = random.choice(heroes).replace(" ","")
+        hero = random.choice(heroes)
         number = random.randint(0, 99)
         
         # Generate RSA pair
@@ -49,7 +51,7 @@ def encrypt_password():
         cipher = PKCS1_OAEP.new(key)
         # Encrypt the password
         encrypted_password = cipher.encrypt(password.encode())
-        
+
         # Store encrypted password and the associated data in the db
         conn = sqlite3.connect("secure_passwords.db")
         cursor = conn.cursor()

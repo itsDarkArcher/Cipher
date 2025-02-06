@@ -67,7 +67,7 @@ def encrypt_password(password):
     """
     try:
         # Select a random hero and number
-        hero = random.choice(heroes).replace(" ", "")
+        hero = random.choice(heroes)
         number = random.randint(0, 99)
 
         # Generate RSA key pair
@@ -101,7 +101,7 @@ def decrypt_password():
     """
     while True:
         try:
-            hero = input("Enter the hero: ").replace(" ", "")
+            hero = input("Enter the hero: ")
             number = int(input("Enter the number: "))
             cipher = load_data(hero, number)
             if cipher is not None:
@@ -137,7 +137,6 @@ def encrypt_user_password():
             password = input("Enter the password to encrypt: ")
             if check_password_strength(password):
                 hero, number, _, cipher = encrypt_password(password)
-                hero = ''.join(' ' + i if i.isupper() else i for i in hero).lstrip(' ')
                 print(f"A password was encrypted with the hero {hero} and the number {number}.")
                 break
             else:
@@ -155,7 +154,6 @@ def generate_encrypted_password():
             setup_database()
             password = generate_password()
             hero, number, _, cipher = encrypt_password(password)
-            hero = ''.join(' ' + i if i.isupper() else i for i in hero).lstrip(' ')
             print(f"The password {password} was generated and encrypted with the hero {hero} and number {number}.")
             break
         except Exception as e:

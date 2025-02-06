@@ -1,5 +1,5 @@
 # ignoring flow diagrams
-*.vsdx
+*.vscode
 
 #ignoring the storage db 
 secure_passwords.db
