@@ -3,4 +3,4 @@
 #ignoring the storage db 
 secure_passwords.db
 
-/tests
+/source code/tests
