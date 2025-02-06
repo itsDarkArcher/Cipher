@@ -1,9 +1,7 @@
-# ignoring flow diagrams
-*.vscode
+.vscode
 
 #ignoring the storage db 
 secure_passwords.db
 
 /back-end/
-/tests/test_project.py
-/backend_flask/__pycache__
+/tests
